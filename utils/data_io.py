@@ -40,7 +40,11 @@ def load_pkl_demo(demo_dir):
         # Extract timestamp
         # YYYY-MM-DDTHH:MM:SS.ffffff.pkl
         fname = os.path.basename(pkl_path)[:-4]
-        dt = datetime.strptime(fname, '%Y-%m-%dT%H_%M_%S.%f')
+        if os.name=='nt':
+            fmt_str = '%Y-%m-%dT%H_%M_%S.%f'
+        elif os.name=='posix':
+            fmt_str = '%Y-%m-%dT%H:%M:%S.%f'
+        dt = datetime.strptime(fname, fmt_str)
         ts = dt.timestamp()
         ret['timestamps'].append(ts)
 
