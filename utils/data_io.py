@@ -29,6 +29,7 @@ def load_pkl_demo(demo_dir):
     ret = {
         'timestamps': [],
         'wrist_rgb': [],
+        #'base_rgb': [],
         'joint_positions': [],
         'joint_velocities': [],
         'control': [],
@@ -82,10 +83,10 @@ def load_hdf5_demo(hdf5_path):
     return ret
 
 
-def save_hdf5_demo(save_dir, save_data, max_timesteps, episode_idx, camera_names):
+def save_hdf5_demo(save_file, save_data, camera_names):
     """Save demonstration data as HDF5 File.
     Args
-        save_dir (str): Save directory.
+        save_file (str): Save file path.
         save_data (dict): Demonstration data to be saved.
             'timestamps': shape (N,) np.ndarray
             'wrist_rgb': shape (N, 720, 960, 3) np.ndarray
@@ -93,12 +94,10 @@ def save_hdf5_demo(save_dir, save_data, max_timesteps, episode_idx, camera_names
             'joint_velocities': shape (N, 7) np.ndarray
             'control': shape (N, 7) np.ndarray
             'ee_pose': shape (N, 6) np.ndarray
-        max_timesteps (int): Total number of frames in this demonstration.
-        episode_idx (int): Episode index included in saved file name.
         camera_names (list[str]): List of camera names.
     """
-    dataset_path = os.path.join(save_dir, f'episode_{episode_idx}')
-    with h5py.File(dataset_path + '.hdf5', 'w', rdcc_nbytes=1024 ** 2 * 2) as root:
+    max_timesteps = len(save_data['timestamps'])
+    with h5py.File(save_file, 'w', rdcc_nbytes=1024 ** 2 * 2) as root:
         root.attrs['sim'] = False
         obs = root.create_group('observations')
         image = obs.create_group('images')
@@ -113,7 +112,9 @@ def save_hdf5_demo(save_dir, save_data, max_timesteps, episode_idx, camera_names
         action = root.create_dataset('action', (max_timesteps, 7))
         timestamps = root.create_dataset('timestamps', (max_timesteps,))
 
-        root['/observations/images/wrist_rgb'][...] = save_data['wrist_rgb']
+        # save arrays
+        for cam_name in camera_names:
+            root['/observations/images/'+cam_name][...] = save_data[cam_name]
         root['/observations/qpos'][...] = save_data['joint_positions']
         root['/observations/qvel'][...] = save_data['joint_velocities']
         root['/observations/ee_pose'][...] = save_data['ee_pose']

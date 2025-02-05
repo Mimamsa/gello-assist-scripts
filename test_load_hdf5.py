@@ -20,11 +20,11 @@ def main(input_file):
         print(k, data[k].shape)
 
     # visualize
-    # for img in data['/observations/images/wrist_rgb']:
-        # cv2.imshow('Image', img[:,:,::-1])
-        # cv2.waitKey(50)
+    for img in data['/observations/images/wrist_rgb']:
+        cv2.imshow('Image', img[:,:,::-1])
+        cv2.waitKey(50)
 
-    # display_tcp_pos(data['/observations/ee_pose'], fps=20)
+    display_tcp_pos(data['/observations/ee_pose'], fps=20)
 
 
 if __name__=='__main__':

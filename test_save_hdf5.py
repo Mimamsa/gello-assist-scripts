@@ -46,7 +46,8 @@ def main(input_dir, output_dir):
     max_timesteps = len(data['timestamps'])
     camera_names = ['wrist_rgb']
     episode_idx = 0
-    save_hdf5_demo(output_dir, data, max_timesteps, episode_idx, camera_names)
+    output_file = os.path.join(output_dir, f'episode_{episode_idx}.hdf5')
+    save_hdf5_demo(output_file, data, camera_names)
 
 
 if __name__=='__main__':
